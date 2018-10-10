@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.exec.OS;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -245,7 +246,8 @@ public class JavadocRunner {
     private Collection<String> derivePackageNamesFromSourceFolder(File sourceFolder) {
         Collection<File> containedDirectories = FileUtils
                 .listFilesAndDirs(sourceFolder, FalseFileFilter.INSTANCE, TrueFileFilter.INSTANCE).stream()
-                .filter(f -> f.listFiles(((FilenameFilter) new SuffixFileFilter(".java"))::accept).length > 0)
+                .filter(f -> f.listFiles(
+                        ((FilenameFilter) new SuffixFileFilter(".java", IOCase.INSENSITIVE))::accept).length > 0)
                 .collect(Collectors.toList());
         Path sourcePath = sourceFolder.toPath();
         return containedDirectories.stream().map(File::toPath).map(p -> sourcePath.relativize(p)).map(Path::toString)
