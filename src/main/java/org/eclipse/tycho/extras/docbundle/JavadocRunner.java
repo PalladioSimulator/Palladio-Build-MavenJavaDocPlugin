@@ -12,6 +12,7 @@
 package org.eclipse.tycho.extras.docbundle;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -22,7 +23,9 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.exec.OS;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -243,7 +246,9 @@ public class JavadocRunner {
     private Collection<String> derivePackageNamesFromSourceFolder(File sourceFolder) {
         Collection<File> containedDirectories = FileUtils
                 .listFilesAndDirs(sourceFolder, FalseFileFilter.INSTANCE, TrueFileFilter.INSTANCE).stream()
-                .filter(f -> f.listFiles(File::isFile).length > 0).collect(Collectors.toList());
+                .filter(f -> f.listFiles(
+                        ((FilenameFilter) new SuffixFileFilter(".java", IOCase.INSENSITIVE))::accept).length > 0)
+                .collect(Collectors.toList());
         Path sourcePath = sourceFolder.toPath();
         return containedDirectories.stream().map(File::toPath).map(p -> sourcePath.relativize(p)).map(Path::toString)
                 .map(s -> s.replaceAll(Pattern.quote(File.separator), ".")).collect(Collectors.toSet());
