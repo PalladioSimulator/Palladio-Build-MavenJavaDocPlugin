@@ -258,7 +258,7 @@ public class JavadocMojo extends AbstractMojo {
 
         final GatherClasspathVisitor gcv = new GatherClasspathVisitor();
         if (considerSourcesOfCurrentProject) {
-            gsv.visit(this.session.getCurrentProject());
+            gcv.visit(this.session.getCurrentProject());
         }
         visitProjects(this.session.getCurrentProject().getDependencies(), this.scopes, gcv);
 
