@@ -174,6 +174,12 @@ public class JavadocMojo extends AbstractMojo {
     @Parameter(property = "skipTocGen", defaultValue = "false")
     private boolean skipTocGen = false;
 
+    @Parameter(property = "considerSourcesOfCurrentProject", defaultValue = "false")
+    private boolean considerSourcesOfCurrentProject = false;
+
+    @Parameter(property = "considerSourcesOfDependencies", defaultValue = "true")
+    private boolean considerSourcesOfDependencies = true;
+
     /**
      * The output location of the toc file.<br/>
      * This file will be overwritten.
@@ -232,10 +238,18 @@ public class JavadocMojo extends AbstractMojo {
         runner.setDocletArtifactsResolver(docletArtifactsResolver);
 
         final GatherManifestVisitor gmv = new GatherManifestVisitor();
+        if (considerSourcesOfCurrentProject) {
+            gmv.visit(this.session.getCurrentProject());
+        }
         visitProjects(this.session.getCurrentProject().getDependencies(), this.scopes, gmv);
 
         final GatherSourcesVisitor gsv = new GatherSourcesVisitor();
-        visitProjects(this.session.getCurrentProject().getDependencies(), this.scopes, gsv);
+        if (considerSourcesOfCurrentProject) {
+            gsv.visit(this.session.getCurrentProject());
+        }
+        if (considerSourcesOfDependencies) {
+            visitProjects(this.session.getCurrentProject().getDependencies(), this.scopes, gsv);
+        }
 
         getLog().info(String.format("%s source folders", gsv.getSourceFolders().size()));
         for (final File file : gsv.getSourceFolders()) {
@@ -243,6 +257,9 @@ public class JavadocMojo extends AbstractMojo {
         }
 
         final GatherClasspathVisitor gcv = new GatherClasspathVisitor();
+        if (considerSourcesOfCurrentProject) {
+            gsv.visit(this.session.getCurrentProject());
+        }
         visitProjects(this.session.getCurrentProject().getDependencies(), this.scopes, gcv);
 
         final Collection<String> cp = gcv.getClassPath();
