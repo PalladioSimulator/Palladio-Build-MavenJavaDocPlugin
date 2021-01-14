@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 IBH SYSTEMS GmbH and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2013, 2020 IBH SYSTEMS GmbH and others.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBH SYSTEMS GmbH - initial API and implementation
@@ -107,8 +109,7 @@ public class JavadocRunner {
         final File optionsFile = new File(this.buildDirectory, "javadoc.options.txt");
         final Commandline cli = createCommandLine(optionsFile.getAbsolutePath());
 
-        final PrintStream ps = new PrintStream(optionsFile);
-        try {
+        try (PrintStream ps = new PrintStream(optionsFile)) {
             ps.print(createOptionsFileContent());
             ps.close();
 
@@ -121,8 +122,6 @@ public class JavadocRunner {
                     this.log.info("execution failed with rc = " + rc);
                 }
             }
-        } finally {
-            ps.close();
         }
     }
 

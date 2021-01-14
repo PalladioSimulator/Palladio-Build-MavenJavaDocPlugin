@@ -1,9 +1,11 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2015 IBH SYSTEMS GmbH and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * Copyright (c) 2013, 2019 IBH SYSTEMS GmbH and others.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBH SYSTEMS GmbH - initial API and implementation
@@ -34,20 +36,15 @@ import org.eclipse.tycho.classpath.ClasspathEntry;
 import org.eclipse.tycho.core.BundleProject;
 import org.eclipse.tycho.core.TychoProject;
 import org.eclipse.tycho.core.osgitools.BundleReader;
+import org.eclipse.tycho.core.osgitools.DefaultReactorProject;
 
 /**
- * <p>
- * Create the javadoc based API reference for this bundle
- * </p>
- * <p>
+ * Create the javadoc based API reference for this bundle <br>
  * This mojo creates the javadoc documentation by calling the javadoc application from the command
- * line. In addition it creates a ready to include toc-xml file for the Eclipse Help system.
- * </p>
- * <p>
+ * line. In addition it creates a ready to include toc-xml file for the Eclipse Help system. <br>
  * The sources for creating the javadoc are generated automatically based on the dependency that
  * this project has. As dependency you can specify any other maven project, for example the feature
  * project that references you other bundles. Included features will be added to the list.
- * </p>
  * 
  * @since 0.20.0
  */
@@ -118,30 +115,32 @@ public class JavadocMojo extends AbstractMojo {
      * Example configuration:
      * 
      * <pre>
-     * &lt;configuration&gt;
-     *    &lt;javadocOptions&gt;
-     *       &lt;ignoreError&gt;false&lt;/ignoreError&gt;
-     *       &lt;encoding&gt;UTF-8&lt;/encoding&gt;
-     *       &lt;doclet&gt;foo.bar.MyDoclet&lt;/doclet&gt;
-     *       &lt;docletArtifacts&gt;
-     *          &lt;docletArtifact&gt;
-     *             &lt;groupId&gt;foo.bar&lt;/groupId&gt;
-     *             &lt;artifactId&gt;foo.bar.mydocletartifact&lt;/artifactId&gt;
-     *             &lt;version&gt;1.0&lt;/version&gt;
-     *          &lt;/docletArtifact&gt;
-     *       &lt;/docletArtifacts&gt;
-     *       &lt;includes&gt;
-     *          &lt;include&gt;com.example.*&lt;/include&gt;
-     *       &lt;/includes&gt;
-     *       &lt;excludes&gt;
-     *          &lt;exclude&gt;com.example.internal.*&lt;/exclude&gt;
-     *       &lt;/excludes&gt;   
-     *       &lt;additionalArguments&gt;
-     *          &lt;additionalArgument&gt;-windowtitle "The Window Title"&lt;/additionalArgument&gt;
-     *          &lt;additionalArgument&gt;-nosince&lt;/additionalArgument&gt;
-     *       &lt;/additionalArguments&gt;
-     *    &lt;/javadocOptions&gt;
-     * &lt;/configuration&gt;
+     * {@code
+     * <configuration&gt;
+     *    <javadocOptions>
+     *       <ignoreError>false</ignoreError>
+     *       <encoding>UTF-8</encoding>
+     *       <doclet>foo.bar.MyDoclet</doclet>
+     *       <docletArtifacts>
+     *          <docletArtifact>
+     *             <groupId>foo.bar</groupId>
+     *             <artifactId>foo.bar.mydocletartifact</artifactId>
+     *             <version>1.0</version>
+     *          </docletArtifact>
+     *       </docletArtifacts>
+     *       <includes>
+     *          <include>com.example.*</include>
+     *       </includes>
+     *       <excludes>
+     *          <exclude>com.example.internal.*</exclude>
+     *       </excludes>
+     *       <additionalArguments>
+     *          <additionalArgument>-windowtitle "The Window Title"</additionalArgument>
+     *          <additionalArgument>-nosince</additionalArgument>
+     *       </additionalArguments>
+     *    </javadocOptions>
+     * </configuration>
+     * }
      * </pre>
      */
     @Parameter(property = "javadocOptions")
@@ -150,7 +149,8 @@ public class JavadocMojo extends AbstractMojo {
     /**
      * Options for creating the toc files.
      * <ul>
-     * <li><tt>mainLabel</tt>, specifies the main label of the toc file (default: "API Reference")</li>
+     * <li><tt>mainLabel</tt>, specifies the main label of the toc file (default: "API Reference")
+     * </li>
      * <li><tt>mainFilename</tt>, specifies the filename of the TOC file (default:
      * "overview-summary.html")
      * </ul>
@@ -198,6 +198,7 @@ public class JavadocMojo extends AbstractMojo {
 
     @Component(role = TychoProject.class)
     private Map<String, TychoProject> projectTypes;
+
     public void setTocOptions(TocOptions tocOptions) {
         this.tocOptions = tocOptions;
     }
@@ -327,6 +328,7 @@ public class JavadocMojo extends AbstractMojo {
     private class GatherSourcesVisitor implements ProjectVisitor {
         private final Set<File> sourceFolders = new HashSet<>();
 
+        @Override
         public void visit(final MavenProject project) {
             if (JavadocMojo.this.sourceTypes.contains(project.getPackaging())) {
                 for (final String root : (Collection<String>) project.getCompileSourceRoots()) {
@@ -347,6 +349,7 @@ public class JavadocMojo extends AbstractMojo {
     private class GatherManifestVisitor implements ProjectVisitor {
         private final Set<File> manifestFiles = new HashSet<>();
 
+        @Override
         public void visit(final MavenProject project) {
             if (JavadocMojo.this.sourceTypes.contains(project.getPackaging())) {
                 this.manifestFiles.add(new File(project.getBasedir(), "META-INF/MANIFEST.MF"));
@@ -373,7 +376,7 @@ public class JavadocMojo extends AbstractMojo {
         public void visit(final MavenProject project) throws MojoExecutionException {
             final BundleProject bp = getBundleProject(project);
             if (bp != null) {
-                for (final ClasspathEntry cpe : bp.getClasspath(project)) {
+                for (final ClasspathEntry cpe : bp.getClasspath(DefaultReactorProject.adapt(project))) {
                     cpe.getLocations().forEach(location -> this.classPath.add(location.getAbsolutePath()));
                 }
             }

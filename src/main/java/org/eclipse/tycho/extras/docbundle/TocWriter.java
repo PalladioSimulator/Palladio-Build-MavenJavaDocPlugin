@@ -1,9 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2013, 2014 IBH SYSTEMS GmbH and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBH SYSTEMS GmbH - initial API and implementation
@@ -105,15 +107,16 @@ public class TocWriter {
         createTopic(doc, main, "Constant Values", "constant-values.html");
         createTopic(doc, main, "Deprecated List", "deprecated-list.html");
 
-        final LineNumberReader reader = new LineNumberReader(new FileReader(new File(this.javadocDir, "package-list")));
-        try {
+        File packageList = new File(this.javadocDir, "package-list");
+        if (!packageList.exists()) {
+            packageList = new File(this.javadocDir, "element-list");
+        }
+        try (LineNumberReader reader = new LineNumberReader(new FileReader(packageList))) {
             String line;
 
             while ((line = reader.readLine()) != null) {
                 createTopic(doc, packages, line, line.replace('.', '/') + "/package-summary.html");
             }
-        } finally {
-            reader.close();
         }
     }
 
