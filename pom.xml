@@ -55,18 +55,14 @@
 		<url>http://github.com/palladiosimulator/palladio-build-mavenjavadocplugin/tree/master</url>
 	</scm>
 
-	<repositories>
-		<repository>
-			<id>tycho-staging</id>
-		   <url>https://oss.sonatype.org/content/groups/staging/</url>
-		</repository>
-	</repositories> 
-	
 	<pluginRepositories>
 		<pluginRepository>
-		   <id>tycho-staging</id>
-		   <url>https://oss.sonatype.org/content/groups/staging/</url>
-		</pluginRepository>
+			<id>snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		 </pluginRepository>
 	 </pluginRepositories>
 
 	<properties>
