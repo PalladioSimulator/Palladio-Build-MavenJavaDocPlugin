@@ -1,3 +1,5 @@
+Archived as it is no longer in use and the build of palladio has migrated to only using default maven plugins.
+
 # Palladio-Build-MavenJavaDocPlugin
 
 This plugin is a fork of the [tycho-document-bundle-plugin](https://www.eclipse.org/tycho/sitedocs/tycho-extras/tycho-document-bundle-plugin/plugin-info.html). In contrast to the original plugin, this fork provides flags to consider sources of dependencies and the project itself. The default behavior is to only consider sources of dependencies.
